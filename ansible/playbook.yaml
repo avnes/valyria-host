@@ -1,0 +1,11 @@
+---
+- name: Setup physical server for virtualization
+  hosts: all
+  connection: local
+  become: yes
+  vars:
+    command_shell: zsh
+  tasks:
+    - name: "Configure server"
+      include_role:
+        name: "avnes.freehold"

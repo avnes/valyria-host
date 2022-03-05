@@ -1,0 +1,12 @@
+---
+upgrade_software: False
+
+install_software:
+  - dnf-automatic
+  - python39
+  - sysstat
+  - git
+  - libvirt
+  - cockpit
+  - cockpit-machines
+  - virt-manager

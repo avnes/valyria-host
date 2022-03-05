@@ -1,0 +1,18 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Show the /etc/dnf/automatic.conf file
+      command: "cat /etc/dnf/automatic.conf"
+      register: cat_dnf_automatic_reg
+      no_log: true
+      changed_when: false
+
+    - name: Assert that updates are turned on
+      assert:
+        that: "'apply_updates = yes' in cat_dnf_automatic_reg.stdout"
+
+    - name: Assert that only security updates are applied
+      assert:
+        that: "'upgrade_type = security' in cat_dnf_automatic_reg.stdout"

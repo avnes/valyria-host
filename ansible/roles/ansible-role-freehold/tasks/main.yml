@@ -1,0 +1,86 @@
+---
+- name: Upgrade all packages
+  dnf:
+    name: "*"
+    state: latest
+  when: upgrade_software | bool
+  tags:
+    - skip_ansible_lint
+
+- name: Install additional software
+  dnf:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ install_software }}"
+
+- name: Start cockpit
+  systemd:
+    name: cockpit
+    state: started
+  tags:
+    - molecule-notest
+
+- name: Enable cockpit.socket
+  systemd:
+    name: cockpit.socket
+    enabled: yes
+  tags:
+    - molecule-notest
+
+- name: Firewall rules for cockpit
+  firewalld:
+    zone: public
+    service: cockpit
+    permanent: true
+    state: enabled
+    immediate: yes
+  tags:
+    - molecule-notest
+
+- name: Reload firewalld service
+  ansible.builtin.systemd:
+    name: firewalld.service
+    state: reloaded
+  tags:
+    - molecule-notest
+
+- name: Enable and start libvirt
+  systemd:
+    name: libvirtd
+    state: started
+    enabled: yes
+  tags:
+    - molecule-notest
+
+- name: Configure dnf-automatic
+  ansible.builtin.lineinfile:
+    path: "/etc/dnf/automatic.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - regexp: "^apply_updates.*"
+      line: "apply_updates = yes"
+    - regexp: "^upgrade_type.*"
+      line: "upgrade_type = security"
+
+- name: Enable and start dnf-automatic.timer
+  systemd:
+    name: dnf-automatic.timer
+    state: started
+    enabled: yes
+  tags:
+    - molecule-notest
+
+- name: Configure external repo
+  yum_repository:
+    name: hashicorp
+    description: hashicorp repo
+    file: hashicorp.repo
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
+
+- name: Install terraform
+  dnf:
+    name: terraform
+    state: present
