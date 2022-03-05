@@ -6,4 +6,4 @@
   tasks:
     - name: "Configure server"
       include_role:
-        name: "avnes.freehold"
+        name: "ansible-role-freehold"

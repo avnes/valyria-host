@@ -7,6 +7,10 @@ printf "\n\n############### Installing Linux software requirements #############
 
 sudo dnf install -y python39 curl python3-libselinux python39-devel
 
+# Dirty hack to get selinux to work with Python
+
+sudo ln -s /usr/lib64/python3.6/site-packages/selinux /usr/lib/python3.9/site-packages/selinux
+
 printf "\n\n############### Installing Poetry ###############\n"
 curl -sSL https://install.python-poetry.org | python3 -
 PATH=$HOME/.local/bin:$PATH; export PATH

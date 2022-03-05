@@ -1,8 +1,0 @@
----
-- src: avnes.crictl
-- src: avnes.flux
-- src: avnes.helm
-- src: avnes.k0sctl
-- src: avnes.k9s
-- src: avnes.kubectl
-- src: avnes.kubectx
